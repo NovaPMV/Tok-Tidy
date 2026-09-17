@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.4.3
+- Fixed AI model downloads failing on some Windows PCs with "WinError 1314" (symbolic links). Models are now always stored as normal files. A download that failed this way is finished on the next attempt without downloading again.
+
 ## 0.4.2
 - Removed the "Open the guide" link from the installer's last page.
 - Clearer first-run wizard text; the cache can go straight into a folder named like "TokTidy Cache".

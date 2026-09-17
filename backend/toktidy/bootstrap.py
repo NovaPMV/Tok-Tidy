@@ -93,6 +93,8 @@ def download_whisper(size: str) -> None:
 
 def cmd_download_models(args) -> int:
     keys = [k.strip() for k in args.models.split(",") if k.strip()]
+    from .hfcompat import disable_symlinks
+    disable_symlinks()
     say(f"  Models will be stored in {_hub_dir().parent}")
     failed = []
     for key in keys:

@@ -172,6 +172,8 @@ class OpenCLIPEmbedder(Embedder):
 
 
 def load_embedder(key: str, cfg: dict, precision: str = "auto", log=print) -> Embedder:
+    from .hfcompat import disable_symlinks
+    disable_symlinks()
     torch = _torch()
     cls = {"transformers": SigLIPEmbedder, "open_clip": OpenCLIPEmbedder}.get(cfg["backend"])
     if cls is None:
@@ -245,6 +247,8 @@ class Transcriber:
         self._load(device)
 
     def _load(self, device):
+        from .hfcompat import disable_symlinks
+        disable_symlinks()
         from faster_whisper import WhisperModel
         compute = self.cfg.get("compute_type", "auto")
         if compute == "auto":

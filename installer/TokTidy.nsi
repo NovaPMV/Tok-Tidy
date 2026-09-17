@@ -8,7 +8,7 @@ SetCompressor /SOLID lzma
 RequestExecutionLevel user
 
 !ifndef VERSION
-  !define VERSION "0.4.2"
+  !define VERSION "0.4.3"
 !endif
 !define APPNAME "TokTidy"
 !define PUBLISHER "TokTidy"

@@ -379,7 +379,7 @@ installer\build.bat
 
 - **Output:** `dist/TokTidy-Setup-<version>.exe`, plus a `.sha256` file. The version comes from `app/package.json`.
 - **Heavy parts:** the installer is small (under 1 MB) because everything heavy is downloaded during installation. Pinned versions (Electron, uv, Python, PyTorch) are at the top of `installer/bootstrap.ps1`.
-- **Automatic builds:** pushing a tag like `v0.4.2` runs `.github/workflows/build-installer.yml`, which builds the installer and attaches it to the GitHub release.
+- **Automatic builds:** pushing a tag like `v0.4.3` runs `.github/workflows/build-installer.yml`, which builds the installer and attaches it to the GitHub release.
 
 ## Privacy
 

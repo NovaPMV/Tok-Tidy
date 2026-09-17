@@ -1,7 +1,7 @@
 {
   "name": "toktidy",
   "productName": "TokTidy",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "private": true,
   "description": "Fast previews, AI search and drag-to-Premiere for large short-video collections",
   "main": "main.js",

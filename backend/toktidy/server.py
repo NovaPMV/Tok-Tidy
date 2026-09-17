@@ -10,6 +10,7 @@ import collections
 import io
 import json
 import logging
+import re
 import logging.handlers
 import os
 import secrets
@@ -478,7 +479,7 @@ def folders_add(p: dict = Body(...)):
             parent = Path(p["parent"])
             exts = {e.lower() for e in B.settings["video_extensions"]}
             for x in sorted(parent.iterdir(), key=lambda d: d.name.lower()):
-                if not x.is_dir() or x.name.lower() in ("toktidycache", "tiktoksortercache"):
+                if not x.is_dir() or re.sub(r"[\s_\-]", "", x.name.lower()) == "toktidycache":
                     continue
                 try:
                     has_video = any(e.is_file() and os.path.splitext(e.name)[1].lower() in exts

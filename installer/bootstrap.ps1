@@ -387,7 +387,7 @@ function Step-LibraryPath {
 }
 
 function Step-RemoveLibrary {
-    $ids = @('.toktidy-id.json', '.tiktoksorter-id.json')
+    $ids = @('.toktidy-id.json')
     foreach ($p in Get-LibraryParts) {
         if ($p -like '*.db') {
             $dir = Split-Path $p

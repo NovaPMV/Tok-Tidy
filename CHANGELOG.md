@@ -1,12 +1,16 @@
 # Changelog
 
+## 0.4.2
+- Removed the "Open the guide" link from the installer's last page.
+- Clearer first-run wizard text; the cache can go straight into a folder named like "TokTidy Cache".
+- The "can't find its cache" screen no longer shows command-line hints.
+
 ## 0.4.1
 - Installer: the final "measuring installed size" step no longer fills the details list with thousands of lines.
 
 ## 0.4.0
-- Renamed the app to **TokTidy**. Settings and libraries from TikTokSorter are picked up automatically.
+- New name: **TokTidy**.
 - New Windows installer: step-by-step setup that downloads everything, GPU or CPU-only engine, optional desktop shortcut, launch at the end, and a proper uninstaller (listed in Windows "Installed apps").
-- The installer reuses AI models already downloaded by an earlier version instead of downloading them again.
 
 ## 0.3.0
 - TikTok-style colour theme and new icon.

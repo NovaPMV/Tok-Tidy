@@ -8,7 +8,7 @@ SetCompressor /SOLID lzma
 RequestExecutionLevel user
 
 !ifndef VERSION
-  !define VERSION "0.4.1"
+  !define VERSION "0.4.2"
 !endif
 !define APPNAME "TokTidy"
 !define PUBLISHER "TokTidy"
@@ -87,8 +87,6 @@ Var LibPath
 !define MUI_FINISHPAGE_TEXT "TokTidy has been installed on your computer.$\r$\n$\r$\nWhen it opens for the first time, it asks where to keep its library (previews and search data) and which video folders to add.$\r$\n$\r$\nClick Finish to close Setup."
 !define MUI_FINISHPAGE_RUN "$INSTDIR\TokTidy.exe"
 !define MUI_FINISHPAGE_RUN_TEXT "Launch TokTidy now"
-!define MUI_FINISHPAGE_LINK "Open the TokTidy guide"
-!define MUI_FINISHPAGE_LINK_LOCATION "${REPO_URL}#readme"
 !define MUI_PAGE_CUSTOMFUNCTION_SHOW FinishShow
 !insertmacro MUI_PAGE_FINISH
 

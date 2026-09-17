@@ -149,11 +149,18 @@ async function route(retried = false) {
   }
   if (S.state.ready) return enterMain();
   if (S.settings.paths && S.settings.paths.database) {
-    $('cpMsg').textContent = S.state.error || '';
+    // hide command-line hints; the buttons below do the same thing
+    $('cpMsg').textContent = cacheMessage(S.state.error);
     return screen('cacheProblem');
   }
   screen('welcome');
   wizardStep(1);
+}
+
+// The engine's messages include command-line hints; the app's buttons do the same job.
+function cacheMessage(err) {
+  return (err || '').split('\n')
+    .filter((l) => !/^\s*toktidy /.test(l) && !/^If you moved it/.test(l)).join('\n');
 }
 
 function showFatal(msg, log) {
@@ -196,7 +203,8 @@ $('wPickCache').onclick = async () => {
   const [dir] = await window.toktidy.pickFolder({ title: 'Where should the TokTidy cache go?' });
   if (!dir) return;
   const base = dir.replace(/[\\/]+$/, '');
-  wizardCache = /(TokTidyCache|TikTokSorterCache)$/i.test(base) ? base : `${base}\\TokTidyCache`;
+  // Use a folder named like "TokTidy Cache" as-is; otherwise make one inside the chosen folder.
+  wizardCache = /tok[\s_-]*tidy[\s_-]*cache$/i.test(base) ? base : `${base}\\TokTidy Cache`;
   $('wCachePath').textContent = wizardCache;
   $('wCachePath').classList.remove('muted');
   $('wCreate').disabled = false;
@@ -249,7 +257,7 @@ async function relinkPart(part, path) {
     const st = await api('/api/cache/relink', { part, path });
     toast(`${part} relinked.`, 'ok');
     if (st.ready) await route();
-    else $('cpMsg').textContent = st.error || '';
+    else $('cpMsg').textContent = cacheMessage(st.error);
   } catch (e) { fail(e); }
 }
 document.querySelectorAll('[data-relink]').forEach((b) => {

@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import argparse
 import os
-import shutil
 import sys
 import threading
 import time
@@ -19,14 +18,6 @@ from .config import DEFAULTS
 
 # Approximate download sizes, only used for progress messages.
 APPROX_GB = {"siglip2": 4.5, "openclip": 1.7, "whisper": 0.5}
-# Hugging Face cache folders an earlier TikTokSorter/TokTidy install may already have.
-KNOWN_REPOS = {
-    "siglip2": ["models--google--siglip2-so400m-patch14-224"],
-    "openclip": ["models--laion--CLIP-ViT-L-14-DataComp.XL-s13B-b90K"],
-    "whisper": ["models--Systran--faster-whisper-small"],
-}
-
-
 def say(msg: str = "") -> None:
     print(msg, flush=True)
 
@@ -77,24 +68,6 @@ class Progress:
         self.t.join(timeout=2)
 
 
-def reuse_old_downloads(keys: list[str]) -> None:
-    """Copy models from the default Hugging Face cache instead of downloading them again."""
-    target = _hub_dir()
-    source = Path.home() / ".cache" / "huggingface" / "hub"
-    if not source.exists() or source.resolve() == target.resolve():
-        return
-    for key in keys:
-        for name in KNOWN_REPOS.get(key, []):
-            src, dst = source / name, target / name
-            if src.is_dir() and not dst.exists():
-                say(f"  Found {key} already downloaded on this PC; copying it instead of downloading ...")
-                try:
-                    shutil.copytree(src, dst, symlinks=False)
-                except OSError as e:
-                    say(f"  (copy failed, will download instead: {e})")
-                    shutil.rmtree(dst, ignore_errors=True)
-
-
 def download_siglip2(cfg: dict) -> None:
     from huggingface_hub import snapshot_download
     snapshot_download(cfg["model_id"], allow_patterns=["*.json", "*.safetensors", "*.model", "*.txt"])
@@ -121,7 +94,6 @@ def download_whisper(size: str) -> None:
 def cmd_download_models(args) -> int:
     keys = [k.strip() for k in args.models.split(",") if k.strip()]
     say(f"  Models will be stored in {_hub_dir().parent}")
-    reuse_old_downloads(keys)
     failed = []
     for key in keys:
         label = {"siglip2": "SigLIP 2", "openclip": "OpenCLIP", "whisper": "Whisper (speech)"}.get(key, key)

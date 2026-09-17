@@ -22,7 +22,6 @@ from . import db
 from .config import ConfigError, load_settings, save_settings
 
 ID_FILENAME = ".toktidy-id.json"
-LEGACY_ID_FILENAMES = (".tiktoksorter-id.json",)   # caches made before the rename
 FOLDER_PARTS = ("frames", "previews", "embeddings")
 ALL_PARTS = ("database",) + FOLDER_PARTS
 
@@ -77,12 +76,10 @@ def write_id_file(folder: Path, cache_id: str, kind: str) -> None:
 
 
 def read_id_file(folder: Path) -> dict | None:
-    for name in (ID_FILENAME, *LEGACY_ID_FILENAMES):
-        try:
-            return json.loads((folder / name).read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError):
-            continue
-    return None
+    try:
+        return json.loads((folder / ID_FILENAME).read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
 
 
 def read_db_cache_id(db_file: Path) -> str | None:

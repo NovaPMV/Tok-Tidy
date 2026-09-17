@@ -110,7 +110,7 @@ Every download comes from the project's official source (GitHub, pytorch.org, Py
 
 A short guide appears the first time TokTidy opens:
 
-1. **Library location.** Choose where TokTidy keeps its previews, frames and search data. It creates a `TokTidyCache` folder there. Pick a drive with enough room (about 0.6 GB per 1,000 clips). If you already have a library, choose **I already have a library**.
+1. **Library location.** Choose where TokTidy keeps its previews, frames and search data. A new, empty folder such as `TokTidy Cache` works best (if you pick another folder, TokTidy creates a `TokTidy Cache` folder inside it). Pick a drive with enough room (about 0.6 GB per 1,000 clips). If you already have a library, choose **I already have a library**.
 2. **Add folders.** Add your video folders one at a time, add every folder inside a parent folder at once, or drag folders in from File Explorer.
 3. **Start indexing.** **Start a test run** indexes 50 clips per folder, so you can try everything quickly. **Index everything** does the whole collection. You can keep using the app while it runs.
 
@@ -268,7 +268,7 @@ For 150,000 clips under 15 seconds:
 | What | Where |
 |---|---|
 | The program, Python, AI engine, ffmpeg and AI models | The install folder (default `%LOCALAPPDATA%\Programs\TokTidy`) |
-| Your library (previews, frames, search data, database) | The `TokTidyCache` folder you chose on first launch |
+| Your library (previews, frames, search data, database) | The cache folder you chose on first launch |
 | Settings and logs | `%APPDATA%\TokTidy` |
 | Temporary audio while transcribing | `%TEMP%\TokTidy` |
 | Your videos | Where they already are. TokTidy only reads them. |
@@ -321,9 +321,6 @@ That's expected. Whisper writes down sung words too.
 
 **The library "can't be found" after moving it**
 TokTidy shows a screen with **Locate…** buttons. Point each one to the new location, and nothing needs to be rebuilt.
-
-**Coming from TikTokSorter (the old name)?**
-TokTidy picks up your old settings and library automatically. The installer also reuses AI models the old version already downloaded. After checking that everything works, you can delete the old program folder and `%USERPROFILE%\.cache\huggingface` to free about 7 GB.
 
 ## For developers
 
@@ -382,7 +379,7 @@ installer\build.bat
 
 - **Output:** `dist/TokTidy-Setup-<version>.exe`, plus a `.sha256` file. The version comes from `app/package.json`.
 - **Heavy parts:** the installer is small (under 1 MB) because everything heavy is downloaded during installation. Pinned versions (Electron, uv, Python, PyTorch) are at the top of `installer/bootstrap.ps1`.
-- **Automatic builds:** pushing a tag like `v0.4.1` runs `.github/workflows/build-installer.yml`, which builds the installer and attaches it to the GitHub release.
+- **Automatic builds:** pushing a tag like `v0.4.2` runs `.github/workflows/build-installer.yml`, which builds the installer and attaches it to the GitHub release.
 
 ## Privacy
 

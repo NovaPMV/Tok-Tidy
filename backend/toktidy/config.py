@@ -13,7 +13,6 @@ from pathlib import Path
 
 APP_NAME = "TokTidy"
 BOTH = "both"            # pseudo model key: search with every enabled model and merge the rankings
-SETTINGS_VERSION = 3
 
 VIDEO_EXTENSIONS = [
     ".mp4", ".mov", ".m4v", ".webm", ".mkv", ".avi", ".wmv", ".flv",
@@ -86,7 +85,6 @@ DEFAULTS: dict = {
         "beam_size": 5,
     },
     "video_extensions": VIDEO_EXTENSIONS,
-    "settings_version": 3,
     # Desktop app preferences
     "app": {
         "show_details": True,
@@ -106,22 +104,9 @@ class ConfigError(Exception):
     """A problem the user needs to fix (shown without a traceback)."""
 
 
-LEGACY_APP_NAMES = ("TikTokSorter",)   # settings folders from before the rename
-
-
 def app_dir() -> Path:
     base = os.environ.get("APPDATA") or str(Path.home() / ".config")
     p = Path(base) / APP_NAME
-    if not (p / "settings.json").exists():
-        for old in LEGACY_APP_NAMES:
-            src = Path(base) / old / "settings.json"
-            if src.exists():
-                p.mkdir(parents=True, exist_ok=True)
-                try:
-                    (p / "settings.json").write_bytes(src.read_bytes())
-                except OSError:
-                    pass
-                break
     p.mkdir(parents=True, exist_ok=True)
     return p
 
@@ -147,19 +132,7 @@ def load_settings() -> dict:
             data = json.loads(path.read_text(encoding="utf-8"))
         except json.JSONDecodeError as e:
             raise ConfigError(f"settings.json is not valid JSON ({e}). File: {path}")
-    migrated = False
-    if data and int(data.get("settings_version") or 0) < 3:
-        # v0.3: OpenCLIP becomes the default search model
-        data["default_model"] = "openclip"
-        data["settings_version"] = 3
-        migrated = True
-    merged = _deep_merge(copy.deepcopy(DEFAULTS), data)
-    if migrated:
-        try:
-            save_settings(merged)
-        except OSError:
-            pass
-    return merged
+    return _deep_merge(copy.deepcopy(DEFAULTS), data)
 
 
 def save_settings(settings: dict) -> None:

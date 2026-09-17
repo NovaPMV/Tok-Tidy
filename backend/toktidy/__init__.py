@@ -1,2 +1,2 @@
 """TokTidy - AI search and fast previews for large TikTok collections."""
-__version__ = "0.4.1"
+__version__ = "0.4.2"

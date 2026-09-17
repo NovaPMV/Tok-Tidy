@@ -228,13 +228,24 @@ function Step-Uv {
     Say '  Package manager ready.'
 }
 
+function Test-EnvPython {
+    if (-not (Test-Path $PyExe)) { return $false }
+    return ((Invoke-Native $PyExe @('-c', 'import sys; print(sys.version)')) -eq 0)
+}
+
 function Step-Python {
     Use-UvEnvironment
-    if (Test-Path $PyExe) {
-        $code = Invoke-Native $PyExe @('-c', 'import sys; print(sys.version)')
-        if ($code -eq 0) { Say '  Python environment already exists, skipping.'; return }
-        Say '  The existing Python environment is broken; recreating it ...'
+    if (Test-EnvPython) { Say '  Python environment already exists, skipping.'; return }
+    if (Test-Path $EnvDir) {
+        # Usually means the TokTidy folder was moved: the environment's launcher still
+        # points at the old place. Rebuild just the launcher and keep the installed libraries.
+        Say '  Repairing the Python environment (was the TokTidy folder moved?) ...'
+        Invoke-Native $UvExe @('python', 'install', $PythonVersion) | Out-Null
+        Invoke-Native $UvExe @('venv', $EnvDir, '--python', $PythonVersion, '--allow-existing') | Out-Null
+        if (Test-EnvPython) { Say '  Python environment repaired.'; return }
+        Say '  Repair did not work; setting up Python and its libraries from scratch ...'
         Remove-Item -Recurse -Force -LiteralPath $EnvDir
+        Remove-Item -Force -ErrorAction SilentlyContinue (Join-Path $State 'torch-*.done'), (Join-Path $State 'libs.done')
     }
     Say "  Downloading Python $PythonVersion (private copy, about 30 MB) ..."
     $code = Invoke-Native $UvExe @('python', 'install', $PythonVersion)

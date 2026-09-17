@@ -23,6 +23,31 @@ const PYTHON = process.env.TOKTIDY_PYTHON || (INSTALLED
     ? path.join(ROOT, '.venv', 'Scripts', 'python.exe')
     : path.join(ROOT, '.venv', 'bin', 'python')));
 
+// In the installed layout, run the real Python (it can be moved with the folder)
+// rather than the venv's python.exe, which remembers the old location.
+function findBasePython() {
+  if (!INSTALLED) return null;
+  const dir = path.join(ROOT, 'engine', 'python');
+  let names = [];
+  try { names = fs.readdirSync(dir); } catch { return null; }
+  const found = names
+    .filter((n) => /^cpython-3\.\d+\.\d+/i.test(n))
+    .filter((n) => {
+      try { return !fs.lstatSync(path.join(dir, n)).isSymbolicLink(); } catch { return false; }   // skip junctions
+    })
+    .filter((n) => fs.existsSync(path.join(dir, n, 'python.exe')))
+    .sort((a, b) => {
+      const va = a.match(/(\d+)\.(\d+)\.(\d+)/).slice(1).map(Number);
+      const vb = b.match(/(\d+)\.(\d+)\.(\d+)/).slice(1).map(Number);
+      return va[0] - vb[0] || va[1] - vb[1] || va[2] - vb[2];
+    });
+  return found.length ? path.join(dir, found[found.length - 1], 'python.exe') : null;
+}
+const SITE_PACKAGES = INSTALLED ? path.join(ROOT, 'engine', 'env', 'Lib', 'site-packages') : null;
+const BASE_PYTHON = process.env.TOKTIDY_PYTHON ? null
+  : (fs.existsSync(SITE_PACKAGES || '') ? findBasePython() : null);
+const ENGINE_PYTHON = BASE_PYTHON || PYTHON;
+
 if (process.platform === 'win32') app.setAppUserModelId('com.toktidy.app');
 
 let mainWindow = null;
@@ -42,9 +67,9 @@ function logLine(line) {
 function startBackend() {
   backendLog = [];
   return new Promise((resolve, reject) => {
-    if (!fs.existsSync(PYTHON)) {
+    if (!fs.existsSync(ENGINE_PYTHON)) {
       reject(new Error(INSTALLED
-        ? `TokTidy's AI engine is missing:\n${PYTHON}\n\nRun the TokTidy installer again to repair it.`
+        ? `TokTidy's AI engine is missing:\n${ENGINE_PYTHON}\n\nRun the TokTidy installer again to repair it.`
         : `TokTidy's Python environment was not found:\n${PYTHON}\n\nRun setup.bat first.`));
       return;
     }
@@ -67,7 +92,9 @@ function startBackend() {
       env.HF_HOME = MODELS_DIR;
       env.TORCH_HOME = path.join(MODELS_DIR, 'torch');
     }
-    const proc = spawn(PYTHON, ['-m', 'toktidy.server'], { cwd: ROOT, env, windowsHide: true });
+    if (BASE_PYTHON) env.TOKTIDY_SITE_PACKAGES = SITE_PACKAGES;
+    const args = BASE_PYTHON ? ['-m', 'toktidy._boot', 'toktidy.server'] : ['-m', 'toktidy.server'];
+    const proc = spawn(ENGINE_PYTHON, args, { cwd: ROOT, env, windowsHide: true });
     backend = proc;
     let settled = false;
     const timer = setTimeout(() => {
@@ -128,8 +155,51 @@ function stopBackend() {
 // ------------------------------------------------------------------ shortcut repair
 // If the TokTidy folder was moved, the Desktop shortcut still points at the
 // old place. Each start, point it at this copy (only if the shortcut exists).
+// Installed copy moved to another folder: point its shortcuts and its
+// "Installed apps" entry at the new place.
+function repairInstalledLocation() {
+  if (process.platform !== 'win32' || !INSTALLED) return;
+  const exe = process.execPath;
+  const same = (a, b) => !!a && !!b && path.resolve(a).toLowerCase() === path.resolve(b).toLowerCase();
+  const links = [
+    path.join(app.getPath('desktop'), 'TokTidy.lnk'),
+    path.join(app.getPath('appData'), 'Microsoft', 'Windows', 'Start Menu', 'Programs', 'TokTidy.lnk'),
+  ];
+  for (const lnk of links) {
+    try {
+      if (!fs.existsSync(lnk)) continue;
+      let cur = {};
+      try { cur = shell.readShortcutLink(lnk); } catch { /* rewrite */ }
+      if (same(cur.target, exe)) continue;
+      shell.writeShortcutLink(lnk, 'replace', { target: exe, args: '', cwd: ROOT, icon: exe, iconIndex: 0, description: 'TokTidy' });
+      logLine(`Shortcut updated: ${lnk}`);
+    } catch (e) { logLine(`Shortcut check skipped: ${e.message}`); }
+  }
+  const { execFile } = require('child_process');
+  const reg = path.join(process.env.SystemRoot || 'C:\\Windows', 'System32', 'reg.exe');
+  const key = 'HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\TokTidy';
+  execFile(reg, ['query', key, '/v', 'InstallLocation'], { windowsHide: true }, (err, out) => {
+    if (err) return;   // not installed by the installer
+    const m = /InstallLocation\s+REG_\w+\s+(.+)/i.exec(out || '');
+    if (m && same(m[1].trim(), ROOT)) return;
+    const uninst = path.join(ROOT, 'Uninstall TokTidy.exe');
+    const values = [
+      ['InstallLocation', ROOT],
+      ['DisplayIcon', `${exe},0`],
+      ['UninstallString', `"${uninst}"`],
+      ['QuietUninstallString', `"${uninst}" /S`],
+    ];
+    for (const [name, data] of values) {
+      execFile(reg, ['add', key, '/v', name, '/t', 'REG_SZ', '/d', data, '/f'], { windowsHide: true }, () => {});
+    }
+    execFile(reg, ['add', 'HKCU\\Software\\TokTidy', '/v', 'InstallDir', '/t', 'REG_SZ', '/d', ROOT, '/f'], { windowsHide: true }, () => {});
+    logLine(`Installed location updated to ${ROOT}`);
+  });
+}
+
 function repairDesktopShortcut() {
-  if (process.platform !== 'win32' || INSTALLED) return;   // the installer manages its own shortcuts
+  if (process.platform !== 'win32') return;
+  if (INSTALLED) { repairInstalledLocation(); return; }
   try {
     const lnk = path.join(app.getPath('desktop'), 'TokTidy.lnk');
     if (!fs.existsSync(lnk)) return;
@@ -287,7 +357,7 @@ ipcMain.handle('app-info', () => ({
   chrome: process.versions.chrome,
   platform: `${process.platform} ${process.getSystemVersion ? process.getSystemVersion() : ''}`,
   root: ROOT,
-  python: PYTHON,
+  python: ENGINE_PYTHON,
 }));
 
 // ------------------------------------------------------------------ lifecycle

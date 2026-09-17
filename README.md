@@ -37,11 +37,12 @@ Everything runs locally. After the one-time download of the AI models, no videos
 6. [How it works](#how-it-works)
 7. [Where TokTidy keeps things](#where-toktidy-keeps-things)
 8. [Updating](#updating)
-9. [Uninstalling](#uninstalling)
-10. [Troubleshooting](#troubleshooting)
-11. [For developers](#for-developers)
-12. [Privacy](#privacy)
-13. [License and credits](#license-and-credits)
+9. [Moving TokTidy to another folder](#moving-toktidy-to-another-folder)
+10. [Uninstalling](#uninstalling)
+11. [Troubleshooting](#troubleshooting)
+12. [For developers](#for-developers)
+13. [Privacy](#privacy)
+14. [License and credits](#license-and-credits)
 
 ## Features
 
@@ -277,6 +278,12 @@ For 150,000 clips under 15 seconds:
 
 Download the newest installer from [Releases](../../releases) and run it. It installs over the existing copy and skips downloads that are already up to date. Your library and settings are kept.
 
+## Moving TokTidy to another folder
+
+You can move the whole TokTidy install folder, for example to another drive. Open TokTidy once from its new location (double-click `TokTidy.exe`), and it updates its Start menu and Desktop shortcuts and its entry in Windows' installed apps.
+
+If something doesn't work after a move, run the installer again and choose the new folder. It repairs the installation without downloading everything again.
+
 ## Uninstalling
 
 1. Close TokTidy.
@@ -379,7 +386,7 @@ installer\build.bat
 
 - **Output:** `dist/TokTidy-Setup-<version>.exe`, plus a `.sha256` file. The version comes from `app/package.json`.
 - **Heavy parts:** the installer is small (under 1 MB) because everything heavy is downloaded during installation. Pinned versions (Electron, uv, Python, PyTorch) are at the top of `installer/bootstrap.ps1`.
-- **Automatic builds:** pushing a tag like `v0.4.3` runs `.github/workflows/build-installer.yml`, which builds the installer and attaches it to the GitHub release.
+- **Automatic builds:** pushing a tag like `v0.4.4` runs `.github/workflows/build-installer.yml`, which builds the installer and attaches it to the GitHub release.
 
 ## Privacy
 

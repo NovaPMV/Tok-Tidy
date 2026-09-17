@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.4
+- The installed TokTidy folder can now be moved: the engine no longer depends on paths from the original location, and TokTidy updates its shortcuts and its "Installed apps" entry the next time it opens.
+- Running the installer again repairs a moved installation without downloading the libraries again.
+
 ## 0.4.3
 - Fixed AI model downloads failing on some Windows PCs with "WinError 1314" (symbolic links). Models are now always stored as normal files. A download that failed this way is finished on the next attempt without downloading again.
 

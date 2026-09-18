@@ -9,6 +9,9 @@
   Windows 10/11 · runs entirely on your own PC · free and open source (MIT)
 </p>
 
+<img width="1541" height="944" alt="TokTidy Preview" src="https://github.com/user-attachments/assets/8867b4e9-9e72-47e4-a95c-3cf9b587a016" />
+
+
 ---
 
 TokTidy is a desktop app for video editors who make **split-screen edits**, where several short clips play side by side. Those edits look best when the clips match, but finding matching clips by scrolling through tens of thousands of videos is slow.

@@ -9,8 +9,7 @@
   Windows 10/11 · runs entirely on your own PC · free and open source (MIT)
 </p>
 
-<img width="1541" height="944" alt="TokTidy Preview" src="https://github.com/user-attachments/assets/8867b4e9-9e72-47e4-a95c-3cf9b587a016" />
-
+<img width="1539" height="942" alt="TokTidy Preview" src="https://github.com/user-attachments/assets/59d3a327-5ea6-4e73-bf5f-4856ff179ecc" />
 
 ---
 

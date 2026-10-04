@@ -11,6 +11,9 @@
 
 ---
 
+<img width="1482" height="908" alt="toktidy" src="https://github.com/user-attachments/assets/ae8479ad-c483-4118-87e1-f46cfcdf4bc6" />
+
+
 TokTidy is a desktop app for video editors who make **split-screen edits**, where several short clips play side by side. Those edits look best when the clips match, but finding matching clips by scrolling through tens of thousands of videos is slow.
 
 TokTidy lets you browse the whole collection as a grid of moving previews and search it:

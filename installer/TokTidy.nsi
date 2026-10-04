@@ -13,7 +13,7 @@ RequestExecutionLevel user
 !define APPNAME "TokTidy"
 !define PUBLISHER "TokTidy"
 !ifndef REPO_URL
-  !define REPO_URL "https://github.com/YOUR-USERNAME/TokTidy"
+  !define REPO_URL "https://github.com/NovaPMV/TokTidy"
 !endif
 !define UNINSTKEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\TokTidy"
 !define UNINSTEXE "Uninstall TokTidy.exe"

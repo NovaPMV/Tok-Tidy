@@ -273,9 +273,19 @@ class Transcriber:
                 return self._transcribe(audio_path)
             raise
 
+    def _audio(self, audio_path: Path):
+        """Decoded samples, or the plain path if our own decode is unavailable."""
+        try:
+            from . import media
+            return media.decode_audio_array(Path(audio_path))
+        except Exception as e:                      # ffmpeg missing, odd file, ...
+            self.log(f"  ! Reading audio with ffmpeg failed ({type(e).__name__}: {e}); "
+                     "letting Whisper open the file instead.")
+            return str(audio_path)
+
     def _transcribe(self, audio_path: Path) -> dict:
         segments, info = self.model.transcribe(
-            str(audio_path),
+            self._audio(audio_path),
             beam_size=int(self.cfg.get("beam_size", 5)),
             vad_filter=bool(self.cfg.get("vad", True)),
             condition_on_previous_text=False,

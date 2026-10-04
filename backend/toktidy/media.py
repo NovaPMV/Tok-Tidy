@@ -67,6 +67,30 @@ def _err_tail(stderr: bytes, lines: int = 4) -> str:
     return " | ".join(text[-lines:]) if text else "unknown ffmpeg error"
 
 
+# ------------------------------------------------------------ audio for Whisper
+
+WHISPER_SAMPLE_RATE = 16000
+
+
+def decode_audio_array(src: Path, low_priority: bool = True) -> np.ndarray:
+    """Read any audio or video file as mono 16 kHz float32, using our own ffmpeg.
+
+    faster-whisper would otherwise decode the file with PyAV, whose API changes
+    between releases (PyAV 19 dropped the argument faster-whisper passes, which
+    made every transcription fail). Decoding here keeps transcription working
+    whatever PyAV version happens to be installed, and reuses the ffmpeg that
+    ships with TokTidy.
+    """
+    cmd = [tool("ffmpeg"), "-hide_banner", "-nostdin", "-loglevel", "error",
+           "-i", str(src), "-vn", "-map", "0:a:0", "-ac", "1",
+           "-ar", str(WHISPER_SAMPLE_RATE), "-f", "s16le", "-"]
+    r = _run(cmd, low_priority)
+    if r.returncode != 0 or not r.stdout:
+        raise MediaError(f"Could not read the audio of {src.name}: {_err_tail(r.stderr)}")
+    pcm = np.frombuffer(r.stdout, np.int16)
+    return (pcm.astype(np.float32) / 32768.0)
+
+
 # ------------------------------------------------------------ probing
 
 @dataclass

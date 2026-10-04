@@ -11,5 +11,8 @@ sentencepiece
 protobuf
 open_clip_torch>=3.3,<4
 faster-whisper>=1.2,<2
+# faster-whisper calls av.open(metadata_errors=...), which PyAV 19 removed.
+# TokTidy decodes audio with its own ffmpeg, but keep a working PyAV for anything else.
+av>=13,<19
 fastapi>=0.115
 uvicorn>=0.30

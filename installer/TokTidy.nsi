@@ -8,12 +8,12 @@ SetCompressor /SOLID lzma
 RequestExecutionLevel user
 
 !ifndef VERSION
-  !define VERSION "0.4.4"
+  !define VERSION "0.4.5"
 !endif
 !define APPNAME "TokTidy"
 !define PUBLISHER "TokTidy"
 !ifndef REPO_URL
-  !define REPO_URL "https://github.com/NovaPMV/TokTidy"
+  !define REPO_URL "https://github.com/YOUR-USERNAME/TokTidy"
 !endif
 !define UNINSTKEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\TokTidy"
 !define UNINSTEXE "Uninstall TokTidy.exe"

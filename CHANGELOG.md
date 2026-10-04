@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.5
+- Fixed speech transcription failing with "TypeError: open() got an unexpected keyword argument 'metadata_errors'" on new installs. TokTidy now decodes audio with its own ffmpeg instead of relying on faster-whisper's PyAV decoder, and PyAV is pinned to a version faster-whisper supports.
+- Clips that failed this way can be fixed with Settings > Library & cache > Retry failed clips, then "Index new clips". Nothing is re-decoded; only the transcription step runs again.
+
 ## 0.4.4
 - The installed TokTidy folder can now be moved: the engine no longer depends on paths from the original location, and TokTidy updates its shortcuts and its "Installed apps" entry the next time it opens.
 - Running the installer again repairs a moved installation without downloading the libraries again.

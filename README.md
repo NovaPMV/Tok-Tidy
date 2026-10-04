@@ -9,8 +9,6 @@
   Windows 10/11 · runs entirely on your own PC · free and open source (MIT)
 </p>
 
-<img width="1539" height="942" alt="TokTidy Preview" src="https://github.com/user-attachments/assets/59d3a327-5ea6-4e73-bf5f-4856ff179ecc" />
-
 ---
 
 TokTidy is a desktop app for video editors who make **split-screen edits**, where several short clips play side by side. Those edits look best when the clips match, but finding matching clips by scrolling through tens of thousands of videos is slow.
@@ -325,6 +323,9 @@ In **Settings → Search & AI**, lower **Frames per GPU batch** (try 16). If you
 **Premiere feels slow while indexing**
 Keep **Run at low priority** on (**Settings → Indexing**), or stop indexing while you edit and resume later.
 
+**Clips fail with "metadata_errors" or speech search finds nothing**
+Fixed in 0.4.5. Install the latest version, then use Settings > Library &amp; cache > Retry failed clips and press "Index new clips" - only the transcription step runs again.
+
 **Audio search finds song lyrics**
 That's expected. Whisper writes down sung words too.
 
@@ -388,7 +389,7 @@ installer\build.bat
 
 - **Output:** `dist/TokTidy-Setup-<version>.exe`, plus a `.sha256` file. The version comes from `app/package.json`.
 - **Heavy parts:** the installer is small (under 1 MB) because everything heavy is downloaded during installation. Pinned versions (Electron, uv, Python, PyTorch) are at the top of `installer/bootstrap.ps1`.
-- **Automatic builds:** pushing a tag like `v0.4.4` runs `.github/workflows/build-installer.yml`, which builds the installer and attaches it to the GitHub release.
+- **Automatic builds:** pushing a tag like `v0.4.5` runs `.github/workflows/build-installer.yml`, which builds the installer and attaches it to the GitHub release.
 
 ## Privacy
 
